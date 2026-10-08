@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  geomeasure-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: geomeasure-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - DEFAULT_CRS=EPSG:4326
+    volumes:
+      - uploads_data:/app/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  uploads_data:

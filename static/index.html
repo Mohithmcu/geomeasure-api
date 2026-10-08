@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoMeasure API — Geospatial File Measurement &amp; Projection Engine</title>
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet GIS Mapping CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Custom Modern Design System -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">GeoMeasure API</h1>
+        <p class="brand-tagline">Automated Geospatial Measurement &amp; UTM Reprojection Service</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="badge-status active" id="systemStatusBadge">
+        <span class="pulse-dot"></span>
+        API Online
+      </div>
+      <a href="/docs" target="_blank" class="nav-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        Swagger Docs
+      </a>
+      <a href="/redoc" target="_blank" class="nav-link">
+        ReDoc
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Workstation Layout -->
+  <main class="main-container">
+
+    <!-- Left Sidebar: Upload, Configuration & Analytics -->
+    <aside class="sidebar">
+
+      <!-- Upload Zone Card -->
+      <section class="glass-card">
+        <h2 class="card-title">
+          <span>Ingest Geospatial File</span>
+          <span style="font-size: 0.75rem; color: var(--text-faint); font-weight: normal;">Shapefile or KML</span>
+        </h2>
+
+        <div class="upload-dropzone" id="dropzone">
+          <div class="upload-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <p class="upload-prompt">Drop your file here, or click to browse</p>
+          <p class="upload-formats">Supported: <strong>.zip</strong> (Shapefile) &bull; <strong>.kml</strong> &bull; <strong>.kmz</strong></p>
+          <input type="file" id="fileInput" class="hidden-input" accept=".zip,.kml,.kmz">
+        </div>
+
+        <div class="progress-bar-container" id="uploadProgress">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- One-Click Sample Dataset Loaders -->
+        <div class="samples-wrapper">
+          <button class="sample-btn" id="loadSampleParcels">
+            <span>🌾 Land Parcels (Fresno, CA)</span>
+            <span class="tag">Shapefile .zip</span>
+          </button>
+          <button class="sample-btn" id="loadSamplePipelines">
+            <span>⚡ Utility Pipelines &amp; Easements</span>
+            <span class="tag">KML lines/poly</span>
+          </button>
+          <button class="sample-btn" id="loadSamplePoints">
+            <span>📍 Geodetic Survey Benchmarks</span>
+            <span class="tag">KML Points (Graceful)</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Active File Metadata Card -->
+      <section class="glass-card" id="fileMetaCard" style="display: none;">
+        <h2 class="card-title">
+          <span>Active Dataset</span>
+          <span class="badge-status active" id="fileStatusBadge">COMPLETED</span>
+        </h2>
+
+        <div class="file-meta-row">
+          <span class="file-meta-label">File ID</span>
+          <span class="file-meta-value" id="metaFileId">-</span>
+        </div>
+        <div class="file-meta-row">
+          <span class="file-meta-label">Filename</span>
+          <span class="file-meta-value" id="metaFilename" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">-</span>
+        </div>
+        <div class="file-meta-row">
+          <span class="file-meta-label">Total Features</span>
+          <span class="file-meta-value" id="metaFeatureCount">0</span>
+        </div>
+        <div class="file-meta-row">
+          <span class="file-meta-label">Source CRS</span>
+          <span class="file-meta-value" id="metaSourceCrs">EPSG:4326</span>
+        </div>
+
+        <!-- CRS Transformation Note -->
+        <div class="crs-callout">
+          <div class="crs-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Auto Projected Metric CRS
+          </div>
+          <p class="crs-details" id="metaProjectedCrs">
+            Transforming from geographic degrees to Universal Transverse Mercator (UTM) for high-precision metric calculations.
+          </p>
+        </div>
+      </section>
+
+      <!-- Aggregate Measurements KPI Grid -->
+      <section class="glass-card" id="kpiCard" style="display: none;">
+        <h2 class="card-title">Aggregate Measurements</h2>
+
+        <div class="kpi-grid">
+          <!-- Total Area KPI -->
+          <div class="kpi-card emerald">
+            <div class="kpi-label">Total Area</div>
+            <div class="kpi-value" id="kpiAreaVal">0.00</div>
+            <div class="kpi-unit-switcher">
+              <button class="unit-chip active" data-unit-type="area" data-unit="m2">m²</button>
+              <button class="unit-chip" data-unit-type="area" data-unit="km2">km²</button>
+              <button class="unit-chip" data-unit-type="area" data-unit="ha">ha</button>
+              <button class="unit-chip" data-unit-type="area" data-unit="ac">ac</button>
+            </div>
+          </div>
+
+          <!-- Total Length / Perimeter KPI -->
+          <div class="kpi-card indigo">
+            <div class="kpi-label">Total Length / Perimeter</div>
+            <div class="kpi-value" id="kpiLengthVal">0.00</div>
+            <div class="kpi-unit-switcher">
+              <button class="unit-chip active" data-unit-type="length" data-unit="m">m</button>
+              <button class="unit-chip" data-unit-type="length" data-unit="km">km</button>
+              <button class="unit-chip" data-unit-type="length" data-unit="mi">mi</button>
+              <button class="unit-chip" data-unit-type="length" data-unit="ft">ft</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Selected Feature Inspector -->
+      <section class="glass-card inspector-card" id="inspectorCard" style="display: none;">
+        <h2 class="card-title">
+          <span>Feature Inspector</span>
+          <span class="feature-pill polygon" id="inspTypePill">Polygon</span>
+        </h2>
+
+        <div class="file-meta-row">
+          <span class="file-meta-label">Feature ID</span>
+          <span class="file-meta-value" id="inspFeatureId">-</span>
+        </div>
+
+        <div id="inspMeasurementRows">
+          <!-- Dynamic metric rows inserted via JS -->
+        </div>
+
+        <!-- Attributes Sub-table -->
+        <div style="margin-top: 0.75rem;">
+          <div class="file-meta-label" style="margin-bottom: 0.35rem; font-weight: 600;">Attributes &amp; Properties</div>
+          <div id="inspAttributes" style="max-height: 140px; overflow-y: auto; font-size: 0.75rem;"></div>
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- Right Content Area: Map Visualizer & Feature Explorer -->
+    <main class="content-area">
+
+      <!-- Interactive Map Window -->
+      <section class="map-container">
+        <div id="map"></div>
+
+        <!-- Floating Map Tool Buttons -->
+        <div class="map-toolbar">
+          <button class="map-tool-btn" id="btnFitBounds" title="Reset View &amp; Fit to Extent">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Map Legend -->
+        <div class="map-legend">
+          <div class="legend-item">
+            <span class="legend-indicator legend-polygon"></span>
+            <span>Polygon (Area)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-indicator legend-line"></span>
+            <span>LineString (Length)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-indicator legend-point"></span>
+            <span>Point (Anchor)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabular Feature Data Explorer Card -->
+      <section class="glass-card" id="tableSection" style="display: none;">
+        <div class="table-toolbar">
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input type="text" class="search-box" id="tableSearchInput" placeholder="Search features by ID or attributes...">
+            <div class="filter-group">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="Polygon">Polygons</button>
+              <button class="filter-btn" data-filter="LineString">LineStrings</button>
+              <button class="filter-btn" data-filter="Point">Points</button>
+            </div>
+          </div>
+
+          <div class="export-actions">
+            <button class="btn-action" id="btnExportGeoJSON" title="Download GeoJSON FeatureCollection">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              GeoJSON
+            </button>
+            <button class="btn-action" id="btnExportCSV" title="Download measurements as CSV">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              CSV
+            </button>
+            <button class="btn-action" id="btnRawApi" title="Open API response in new tab">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              Raw API
+            </button>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table" id="featuresTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Area</th>
+                <th>Length / Perimeter</th>
+                <th>Projected CRS</th>
+                <th>Primary Attributes</th>
+              </tr>
+            </thead>
+            <tbody id="featuresTableBody">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </main>
+
+  <!-- Toast Notification Box -->
+  <div class="toast" id="toast">
+    <span id="toastMessage">File processed successfully</span>
+  </div>
+
+  <!-- Leaflet GIS Mapping Script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Application Client Controller -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

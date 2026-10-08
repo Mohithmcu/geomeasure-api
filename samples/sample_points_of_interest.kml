@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Geodetic Survey Control Benchmarks</name>
+    <Placemark id="BM-001">
+      <name>Triangulation Pillar Alpha</name>
+      <description>High precision geodetic GPS benchmark</description>
+      <Point>
+        <coordinates>77.5946,12.9716,920</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark id="BM-002">
+      <name>Triangulation Pillar Bravo</name>
+      <description>Seismic accelerometer station</description>
+      <Point>
+        <coordinates>77.6102,12.9854,915</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark id="BM-003">
+      <name>Weather Radar Tower</name>
+      <description>Doppler weather radar beacon</description>
+      <Point>
+        <coordinates>77.5812,12.9601,945</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>

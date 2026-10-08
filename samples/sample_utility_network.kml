@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Regional Energy &amp; Water Network</name>
+    <description>Infrastructure pipelines, service easements, and pumping stations</description>
+
+    <!-- LineString 1: Main High-Pressure Gas Line -->
+    <Placemark id="PIPE-NORTH-01">
+      <name>North Gas Transmission Main</name>
+      <description>Steel 24-inch natural gas transmission backbone</description>
+      <ExtendedData>
+        <Data name="Material"><value>API 5L X65 Steel</value></Data>
+        <Data name="Diameter_mm"><value>600</value></Data>
+        <Data name="Operating_Pressure_Bar"><value>68.5</value></Data>
+        <Data name="Installation_Year"><value>2021</value></Data>
+      </ExtendedData>
+      <LineString>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <coordinates>
+          -0.142,51.501,0
+          -0.128,51.508,0
+          -0.115,51.516,0
+          -0.098,51.524,0
+          -0.082,51.535,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+
+    <!-- LineString 2: Regional Aqueduct Trunk -->
+    <Placemark id="PIPE-AQUEDUCT-02">
+      <name>East Thames Potable Water Trunk</name>
+      <description>Prestressed concrete water aqueduct connecting reservoirs</description>
+      <ExtendedData>
+        <Data name="Material"><value>Ductile Iron</value></Data>
+        <Data name="Diameter_mm"><value>900</value></Data>
+        <Data name="Flow_Rate_m3_h"><value>4500</value></Data>
+      </ExtendedData>
+      <LineString>
+        <coordinates>
+          -0.082,51.535,0
+          -0.065,51.542,0
+          -0.048,51.551,0
+          -0.032,51.562,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+
+    <!-- Polygon: Terminal Compressor Station Easement -->
+    <Placemark id="FAC-PUMP-01">
+      <name>St. Jude Gas Compressor Facility</name>
+      <description>Fenced perimeter and safety buffer zone</description>
+      <ExtendedData>
+        <Data name="Zone"><value>Industrial Heavy</value></Data>
+        <Data name="Security_Level"><value>Class 4</value></Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -0.146,51.498,0
+              -0.138,51.498,0
+              -0.138,51.503,0
+              -0.146,51.503,0
+              -0.146,51.498,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+    <!-- Point: Supervisory SCADA Monitoring Station -->
+    <Placemark id="SCADA-MON-09">
+      <name>Pressure Monitoring Station Beta</name>
+      <description>Automated telemetry telemetry beacon</description>
+      <ExtendedData>
+        <Data name="Telemetry"><value>Satellite / 4G Fallback</value></Data>
+        <Data name="Battery_Health"><value>100%</value></Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>-0.115,51.516,25</coordinates>
+      </Point>
+    </Placemark>
+
+  </Document>
+</kml>
